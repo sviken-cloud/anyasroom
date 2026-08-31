@@ -31,15 +31,6 @@ jobs:
       - name: "Debug: show node path"
         run: which node || true
 
-      - name: Generate shorts
-        env:
-          # Path to cookies file if written above
-          YT_COOKIES_FILE: ${{ github.workspace }}/cookies.txt
-          # Path for node runtime to pass to yt-dlp if your code needs it
-          YT_JS_RUNTIME_PATH: /usr/bin/node
-        run: |
-          python -m shortbot.run --refs refs.json --out /tmp/shorts_output
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.3.1
         with:
