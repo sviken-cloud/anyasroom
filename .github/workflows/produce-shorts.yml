@@ -54,7 +54,7 @@ jobs:
       - name: Generate shorts
         run: |
           mkdir -p /tmp/shorts_output
-          python -m shortbot.run --refs refs.json --out /tmp/shorts_output 2>&1 || true
+          python -m shortbot.run --refs refs.json --out /tmp/shorts_output 2>&1
           echo ""
           echo "Exit code: $?"
           echo ""
