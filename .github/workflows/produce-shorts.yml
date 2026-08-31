@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.1.7
 
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.1.1
         with:
           python-version: '3.11'
 
@@ -24,15 +24,22 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Ensure Node.js runtime available for yt-dlp JS extractor
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.0.1
         with:
           node-version: '24'
 
       - name: "Debug: show node path"
         run: which node || true
 
+      - name: Generate shorts
+        env:
+          YT_JS_RUNTIME_PATH: /usr/bin/node
+        run: |
+          python -m shortbot.run --refs refs.json --out /tmp/shorts_output || echo "shortbot failed"
+          ls -la /tmp/shorts_output || echo "Output directory not created"
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.6
         with:
           name: generated-shorts
           path: /tmp/shorts_output
