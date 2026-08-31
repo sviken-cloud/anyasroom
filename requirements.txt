@@ -1,0 +1,56 @@
+name: Produce Shorts Daily
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Runs daily at 2:00 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  produce-shorts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write YouTube cookies (optional, set secret YT_COOKIES)
+        if: ${{ secrets.YT_COOKIES != '' }}
+        run: |
+          echo "$YT_COOKIES" > cookies.txt
+          chmod 600 cookies.txt
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+
+      - name: Ensure Node.js runtime available for yt-dlp JS extractor
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Debug: show node path
+        run: which node || true
+
+      - name: Generate shorts
+        env:
+          # Path to cookies file if written above
+          YT_COOKIES_FILE: ${{ github.workspace }}/cookies.txt
+          # Path for node runtime to pass to yt-dlp if your code needs it
+          YT_JS_RUNTIME_PATH: /usr/bin/node
+        run: |
+          python -m shortbot.run --refs refs.json --out /tmp/shorts_output
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: generated-shorts
+          path: /tmp/shorts_output
+          retention-days: 30
