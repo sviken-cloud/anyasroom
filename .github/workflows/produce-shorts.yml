@@ -1,4 +1,10 @@
-  - name: Install system dependencies
+name: Produce Shorts Daily
+
+on: schedule: - cron: '0 2 * * *' # Runs daily at 2:00 AM UTC workflow_dispatch: # Manual trigger
+
+jobs: produce-shorts: runs-on: ubuntu-latest steps: - name: Checkout code uses: actions/checkout@v4
+
+- name: Install system dependencies
     run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
   - name: Set up Python
