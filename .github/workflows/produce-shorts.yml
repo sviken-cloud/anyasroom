@@ -2,8 +2,8 @@ name: Produce Shorts Daily
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Runs daily at 2:00 AM UTC
-  workflow_dispatch:  # Manual trigger
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   produce-shorts:
@@ -23,47 +23,23 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Ensure Node.js runtime available for yt-dlp JS extractor
-        uses: actions/setup-node@v4.0.1
-        with:
-          node-version: '24'
-
-      - name: "Debug: show node path"
-        run: which node || true
-
-      - name: "Debug: check files"
+      - name: Debug files
         run: |
-          echo "Current directory:"
           pwd
-          echo ""
-          echo "Files in repo:"
           ls -la
-          echo ""
-          echo "Contents of refs.json:"
-          cat refs.json || echo "refs.json not found"
-          echo ""
-          echo "Python version:"
+          cat refs.json || echo "refs.json NOT FOUND"
           python --version
-          echo ""
-          echo "yt-dlp version:"
-          yt-dlp --version || echo "yt-dlp not installed"
-          echo ""
-          echo "ffmpeg version:"
-          ffmpeg -version | head -5 || echo "ffmpeg not installed"
+          yt-dlp --version
+          ffmpeg -version | head -3
 
       - name: Generate shorts
         run: |
           mkdir -p /tmp/shorts_output
-          python -m shortbot.run --refs refs.json --out /tmp/shorts_output 2>&1
-          echo ""
-          echo "Exit code: $?"
-          echo ""
-          echo "Output directory contents:"
-          ls -la /tmp/shorts_output || echo "Directory not found"
+          python -m shortbot.run --refs refs.json --out /tmp/shorts_output
+          ls -la /tmp/shorts_output
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.3.6
         with:
           name: generated-shorts
           path: /tmp/shorts_output
-          retention-days: 30
