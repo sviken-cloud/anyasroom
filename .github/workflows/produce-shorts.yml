@@ -10,36 +10,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
 
-      - name: Install system dependencies
+      - name: Install ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Set up Python
-        uses: actions/setup-python@v5.1.1
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Debug files
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Debug step
         run: |
+          echo "=== Directory ==="
           pwd
+          echo ""
+          echo "=== Files ==="
           ls -la
-          cat refs.json || echo "refs.json NOT FOUND"
+          echo ""
+          echo "=== refs.json ==="
+          cat refs.json 2>&1
+          echo ""
+          echo "=== Python ==="
           python --version
-          yt-dlp --version
+          echo ""
+          echo "=== Dependencies ==="
+          yt-dlp --version 2>&1
           ffmpeg -version | head -3
 
-      - name: Generate shorts
+      - name: Run generator
         run: |
           mkdir -p /tmp/shorts_output
           python -m shortbot.run --refs refs.json --out /tmp/shorts_output
-          ls -la /tmp/shorts_output
+          echo "Exit: $?"
+          ls -la /tmp/shorts_output/
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4.3.6
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
           name: generated-shorts
           path: /tmp/shorts_output
