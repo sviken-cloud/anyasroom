@@ -23,14 +23,6 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      - name: Write YouTube cookies (optional, set secret YT_COOKIES)
-        if: ${{ secrets.YT_COOKIES != '' }}
-        run: |
-          echo "$YT_COOKIES" > cookies.txt
-          chmod 600 cookies.txt
-        env:
-          YT_COOKIES: ${{ secrets.YT_COOKIES }}
-
       - name: Ensure Node.js runtime available for yt-dlp JS extractor
         uses: actions/setup-node@v4
         with:
