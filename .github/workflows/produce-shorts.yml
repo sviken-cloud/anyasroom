@@ -31,12 +31,35 @@ jobs:
       - name: "Debug: show node path"
         run: which node || true
 
-      - name: Generate shorts
-        env:
-          YT_JS_RUNTIME_PATH: /usr/bin/node
+      - name: "Debug: check files"
         run: |
-          python -m shortbot.run --refs refs.json --out /tmp/shorts_output || echo "shortbot failed"
-          ls -la /tmp/shorts_output || echo "Output directory not created"
+          echo "Current directory:"
+          pwd
+          echo ""
+          echo "Files in repo:"
+          ls -la
+          echo ""
+          echo "Contents of refs.json:"
+          cat refs.json || echo "refs.json not found"
+          echo ""
+          echo "Python version:"
+          python --version
+          echo ""
+          echo "yt-dlp version:"
+          yt-dlp --version || echo "yt-dlp not installed"
+          echo ""
+          echo "ffmpeg version:"
+          ffmpeg -version | head -5 || echo "ffmpeg not installed"
+
+      - name: Generate shorts
+        run: |
+          mkdir -p /tmp/shorts_output
+          python -m shortbot.run --refs refs.json --out /tmp/shorts_output 2>&1 || true
+          echo ""
+          echo "Exit code: $?"
+          echo ""
+          echo "Output directory contents:"
+          ls -la /tmp/shorts_output || echo "Directory not found"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.3.6
