@@ -1,4 +1,4 @@
-name: Produce Shorts Daily
+name: Produce Shorts Daily v2
 
 on:
   schedule:
