@@ -46,10 +46,10 @@ jobs:
           yt-dlp --version 2>&1
           ffmpeg -version | head -3
 
-      - name: Run generator
+          - name: Run generator
         run: |
           mkdir -p /tmp/shorts_output
-          python generate_shorts.py --refs refs.json --out /tmp/shorts_output --js-runtime node
+          python generate_shorts.py --refs refs.json --out /tmp/shorts_output
           echo "Exit: $?"
           ls -la /tmp/shorts_output/
 
