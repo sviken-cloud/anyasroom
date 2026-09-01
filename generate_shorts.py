@@ -26,7 +26,7 @@ def download_and_trim_video(url, start_time, duration, output_path):
         download_cmd = [
             "yt-dlp",
             "-f", "best[ext=mp4]",
-            "--js-runtime", "node",
+            "--extractor-args", "youtube:player_client=web",
             "-o", temp_video,
             url
         ]
@@ -137,4 +137,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     main(args.refs, args.out)
-        
