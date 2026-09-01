@@ -29,7 +29,7 @@ def download_and_trim_video(url, start_time, duration, output_path):
             "-f", "best[ext=mp4]",
             "--extractor-args", "youtube:player_client=web",
             "--socket-timeout", "30",
-            "--http-headers", "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "--add-header", "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "-o", temp_video,
             url
         ]
