@@ -27,9 +27,8 @@ def download_and_trim_video(url, start_time, duration, output_path):
         download_cmd = [
             "yt-dlp",
             "-f", "best[ext=mp4]",
-            "--extractor-args", "youtube:player_client=web",
+            "--extractor-args", "youtube:player_client=web,player_skip=js",
             "--socket-timeout", "30",
-            "--add-header", "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "-o", temp_video,
             url
         ]
@@ -43,7 +42,8 @@ def download_and_trim_video(url, start_time, duration, output_path):
                 print("Download successful!")
                 break
             else:
-                print(f"Attempt {attempt + 1} failed: {result.stderr[:200]}")
+                stderr_snippet = result.stderr[:300] if result.stderr else "Unknown error"
+                print(f"Attempt {attempt + 1} failed: {stderr_snippet}")
                 if attempt < max_retries - 1:
                     wait_time = 5 * (attempt + 1)
                     print(f"Waiting {wait_time}s before retry...")
