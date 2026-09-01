@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+import time
 
 
 def download_and_trim_video(url, start_time, duration, output_path):
@@ -27,14 +28,29 @@ def download_and_trim_video(url, start_time, duration, output_path):
             "yt-dlp",
             "-f", "best[ext=mp4]",
             "--extractor-args", "youtube:player_client=web",
+            "--socket-timeout", "30",
+            "--http-headers", "User-Agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "-o", temp_video,
             url
         ]
         
-        result = subprocess.run(download_cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"Error downloading video: {result.stderr}")
-            return False
+        max_retries = 3
+        for attempt in range(max_retries):
+            print(f"Attempt {attempt + 1}/{max_retries}...")
+            result = subprocess.run(download_cmd, capture_output=True, text=True)
+            
+            if result.returncode == 0 and os.path.exists(temp_video):
+                print("Download successful!")
+                break
+            else:
+                print(f"Attempt {attempt + 1} failed: {result.stderr[:200]}")
+                if attempt < max_retries - 1:
+                    wait_time = 5 * (attempt + 1)
+                    print(f"Waiting {wait_time}s before retry...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"Error downloading video after {max_retries} attempts")
+                    return False
         
         if not os.path.exists(temp_video):
             print(f"Video file not found after download")
