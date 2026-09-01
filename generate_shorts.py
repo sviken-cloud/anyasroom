@@ -15,6 +15,7 @@ def download_and_trim_video(url, start_time, duration, output_path):
         download_cmd = [
             "yt-dlp",
             "-f", "best[ext=mp4]",
+            "--js-runtime", "node",
             "-o", temp_video,
             url
         ]
