@@ -133,6 +133,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate YouTube shorts from refs.json")
     parser.add_argument("--refs", required=True, help="Path to refs.json file")
     parser.add_argument("--out", required=True, help="Output directory for generated shorts")
-    
     args = parser.parse_args()
+    
     main(args.refs, args.out)
